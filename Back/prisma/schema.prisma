@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Filme {
+  id                      Int      @id @default(autoincrement())
+  titulo                  String
+  genero                  String
+  descricao               String
+  classificacaoIndicativa String
+  duracao                 Int
+  dataEstreia             DateTime
+  foto                    String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  sessoes Sessao[]
+
+  @@map("filmes")
+}
+
+model Sala {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  capacidade Int
+  tipo       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  sessoes Sessao[]
+
+  @@map("salas")
+}
+
+model Sessao {
+  id            Int      @id @default(autoincrement())
+  horario       DateTime
+  valorIngresso Float
+  idioma        String
+  formato       String
+  filmeId       Int
+  salaId        Int
+
+  filme Filme @relation(fields: [filmeId], references: [id])
+  sala  Sala  @relation(fields: [salaId], references: [id])
+
+  ingressos Ingresso[]
+  
+  @@map("sessoes") 
+}
+
+model Ingresso {
+  id          Int      @id @default(autoincrement())
+  sessaoId    Int
+  nomeCliente String
+  cpf         String
+  poltrona    String
+  pagamento   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sessao Sessao @relation(fields: [sessaoId], references: [id])
+
+  @@map("ingressos")
+}
