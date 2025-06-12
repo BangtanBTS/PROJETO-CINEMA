@@ -26,7 +26,7 @@ export class SalaService {
     return this.prisma.sala.update({ where: { id }, data });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.prisma.sala.delete({ where: { id } });
-  }
+}
 }

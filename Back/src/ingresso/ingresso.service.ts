@@ -7,8 +7,17 @@ import { UpdateIngressoDto } from './dto/update-ingresso.dto';
 export class IngressoService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateIngressoDto) {
-    return this.prisma.ingresso.create({ data });
+  async create(data: CreateIngressoDto) {
+    const { sessaoId, ...resto } = data;
+
+    return this.prisma.ingresso.create({
+      data: {
+        ...resto,
+        sessao: {
+          connect: { id: sessaoId },
+        },
+      },
+    });
   }
 
   findAll() {
@@ -17,10 +26,10 @@ export class IngressoService {
         sessao: {
           include: {
             filme: true,
-            sala: true
-          }
-        }
-      }
+            sala: true,
+          },
+        },
+      },
     });
   }
 
@@ -31,21 +40,31 @@ export class IngressoService {
         sessao: {
           include: {
             filme: true,
-            sala: true
-          }
-        }
-      }
+            sala: true,
+          },
+        },
+      },
     });
 
     if (!ingresso) throw new NotFoundException('Ingresso não encontrado.');
     return ingresso;
   }
 
-  update(id: number, data: UpdateIngressoDto) {
-    return this.prisma.ingresso.update({ where: { id }, data });
+  async update(id: number, data: UpdateIngressoDto) {
+    const { sessaoId, ...resto } = data;
+
+    return this.prisma.ingresso.update({
+      where: { id },
+      data: {
+        ...resto,
+        ...(sessaoId && { sessao: { connect: { id: sessaoId } } }),
+      },
+    });
   }
 
-  remove(id: number) {
-    return this.prisma.ingresso.delete({ where: { id } });
+  async remove(id: number) {
+    return this.prisma.ingresso.delete({
+      where: { id },
+    });
   }
 }

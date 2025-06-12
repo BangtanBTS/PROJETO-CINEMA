@@ -4,8 +4,9 @@ export default function ModalTableIngresso({
   id = "modalTableIngresso",
   idModal = "modalTableIngressoLabel",
   labelBotton = "Ver Ingressos",
-  labelModal = "Lista de Ingressos",
-  textoModal = "Aqui está a tabela com todos os ingressos cadastrados.",
+  labelModal = "Ingressos Comprados",
+  textoModal = "Aqui está a tabela dos ingressos cadastrados no sistema.",
+  onEdit = () => {}
 }) {
   const [ingressos, setIngressos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,22 @@ export default function ModalTableIngresso({
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir este ingresso?")) return;
+    try {
+      const response = await fetch(`http://localhost:3000/ingressos/${id}`, {
+        method: "DELETE"
+      });
+      if (!response.ok) throw new Error("Erro ao excluir ingresso");
+
+      alert("Ingresso excluído com sucesso!");
+      fetchIngressos(); // Atualiza lista
+    } catch (err) {
+      console.error("Erro ao excluir ingresso:", err);
+      alert("Erro ao excluir ingresso");
     }
   };
 
@@ -74,11 +91,12 @@ export default function ModalTableIngresso({
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th>Sessão</th>
+                          <th>Filme - Sala - Data/Horário</th>
                           <th>Cliente</th>
                           <th>CPF</th>
                           <th>Assento</th>
                           <th>Pagamento</th>
+                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -93,11 +111,21 @@ export default function ModalTableIngresso({
                               <td>{ingresso.cpf}</td>
                               <td>{ingresso.poltrona}</td>
                               <td>{ingresso.pagamento}</td>
+                              <td>
+                                <div className="d-flex gap-1 justify-content-center">
+                                  <button className="btn btn-sm btn-warning" onClick={() => onEdit(ingresso)}>
+                                    Editar
+                                  </button>
+                                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(ingresso.id)}>
+                                    Excluir
+                                  </button>
+                                </div>
+                              </td>
                             </tr>
                           ))
                         ) : (
                           <tr>
-                            <td colSpan="6">Nenhum ingresso cadastrado.</td>
+                            <td colSpan="7">Nenhum ingresso cadastrado.</td>
                           </tr>
                         )}
                       </tbody>

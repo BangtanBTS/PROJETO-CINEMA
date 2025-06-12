@@ -27,8 +27,10 @@ export class IngressoController {
     return this.ingressoService.update(+id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ingressoService.remove(+id);
-  }
+ @Delete(':id')
+    remove(@Param('id') id: string) {
+  return this.ingressoService.remove(+id); 
+}
+
+
 }

@@ -5,13 +5,13 @@ export default function ModalTableSessao({
   idModal = "modalTableSessaoLabel",
   labelBotton = "Ver Sessões",
   labelModal = "Lista de Sessões 🎬",
-  textoModal = "Aqui está a tabela com todas as sessões cadastradas."
+  textoModal = "Aqui está a tabela com todas as sessões cadastradas.",
+  onEditSessao, // função recebida do form
 }) {
   const [sessoes, setSessoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Busca as sessões da API
   const fetchSessoes = async () => {
     try {
       setLoading(true);
@@ -30,7 +30,20 @@ export default function ModalTableSessao({
     fetchSessoes();
   }, []);
 
-  // Função auxiliar para formatar data/hora
+  const excluirSessao = async (id) => {
+    if (!window.confirm("Deseja realmente excluir esta sessão?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/sessoes/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Erro ao excluir sessão");
+      fetchSessoes(); // Atualiza a tabela
+    } catch (err) {
+      alert("Erro ao excluir: " + err.message);
+    }
+  };
+
   const formatarDataHora = (dataISO) => {
     const data = new Date(dataISO);
     return data.toLocaleString("pt-BR", {
@@ -88,9 +101,10 @@ export default function ModalTableSessao({
                         <th>Filme</th>
                         <th>Sala</th>
                         <th>Data & Hora</th>
-                        <th>Valor (R$)</th>
+                        <th>Valor</th>
                         <th>Idioma</th>
                         <th>Formato</th>
+                        <th>Ações</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -98,17 +112,31 @@ export default function ModalTableSessao({
                         sessoes.map((sessao) => (
                           <tr key={sessao.id}>
                             <td>{sessao.id}</td>
-                            <td>{sessao.filme?.titulo || "—"}</td>
-                            <td>{sessao.sala?.nome || "—"}</td>
+                            <td>{sessao.filme?.titulo}</td>
+                            <td>{sessao.sala?.nome}</td>
                             <td>{formatarDataHora(sessao.horario)}</td>
                             <td>{sessao.valorIngresso.toFixed(2)}</td>
                             <td>{sessao.idioma}</td>
                             <td>{sessao.formato}</td>
+                            <td>
+                              <button
+                                className="btn btn-warning btn-sm me-2"
+                                onClick={() => onEditSessao(sessao)}
+                              >
+                                Editar
+                              </button>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => excluirSessao(sessao.id)}
+                              >
+                                Excluir
+                              </button>
+                            </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="7">Nenhuma sessão cadastrada.</td>
+                          <td colSpan="8">Nenhuma sessão cadastrada.</td>
                         </tr>
                       )}
                     </tbody>

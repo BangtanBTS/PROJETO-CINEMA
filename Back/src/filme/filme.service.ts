@@ -22,7 +22,8 @@ export class FilmeService {
     return this.prisma.filme.update({ where: { id }, data });
   }
 
-  remove(id: number) {
-    return this.prisma.filme.delete({ where: { id } });
-  }
+  async remove(id: number) {
+    return this.prisma.filme.delete({ where: { id } }); // ou sala.delete, ingresso.delete
+}
+
 }
