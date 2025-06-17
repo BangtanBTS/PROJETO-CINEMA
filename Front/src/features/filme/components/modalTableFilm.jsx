@@ -22,7 +22,7 @@ export default function ModalTableFilm({
     }
   };
 
-  const handleDelete = async (id) => {
+  const excluirFilme = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este filme?")) return;
     try {
       const response = await fetch(`http://localhost:3000/filmes/${id}`, {
@@ -31,9 +31,9 @@ export default function ModalTableFilm({
       if (!response.ok) throw new Error("Erro ao excluir filme");
 
       alert("Filme excluído com sucesso!");
-      buscarFilmes(); // Atualiza a lista
-    } catch (err) {
-      console.error("Erro ao excluir filme:", err);
+      buscarFilmes();
+    } catch (error) {
+      console.error("Erro ao excluir filme:", error);
       alert("Erro ao excluir filme");
     }
   };
@@ -57,7 +57,7 @@ export default function ModalTableFilm({
         aria-labelledby={idModal}
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id={idModal}>
@@ -72,7 +72,6 @@ export default function ModalTableFilm({
             </div>
             <div className="modal-body">
               {textoModal}
-
               <div className="table-responsive mt-3">
                 <table className="table table-bordered table-striped text-center align-middle">
                   <thead>
@@ -84,7 +83,7 @@ export default function ModalTableFilm({
                       <th>Classificação</th>
                       <th>Duração</th>
                       <th>Estreia</th>
-                      <th>Status</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -95,15 +94,26 @@ export default function ModalTableFilm({
                           <td>{filme.titulo}</td>
                           <td>{filme.genero}</td>
                           <td>{filme.descricao}</td>
-                          <td>{filme.classificacaoIndicativa || filme.classificacao}</td>
+                          <td>{filme.classificacaoIndicativa}</td>
                           <td>{filme.duracao} min</td>
-                          <td>{new Date(filme.dataEstreia || filme.estreia).toLocaleDateString("pt-BR")}</td>
+                          <td>{new Date(filme.dataEstreia).toLocaleDateString("pt-BR")}</td>
                           <td>
                             <div className="d-flex justify-content-center gap-1">
-                              <button className="btn btn-sm btn-warning" onClick={() => onEdit(filme)}>
+                              <button
+                                className="btn btn-sm btn-warning"
+                                onClick={() => {
+                                  onEdit(filme);
+                                  setTimeout(() => {
+                                    document.querySelector(".btn-close")?.click();
+                                  }, 100); // tempo para o useEffect preencher o formulário
+                                }}
+                              >
                                 Editar
                               </button>
-                              <button className="btn btn-sm btn-danger" onClick={() => handleDelete(filme.id)}>
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() => excluirFilme(filme.id)}
+                              >
                                 Excluir
                               </button>
                             </div>

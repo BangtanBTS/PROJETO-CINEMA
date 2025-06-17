@@ -31,7 +31,7 @@ export default function ModalTableSala({
       if (!response.ok) throw new Error("Erro ao excluir sala");
 
       alert("Sala excluída com sucesso!");
-      buscarSalas(); // 🔁 Atualiza a lista
+      buscarSalas();
     } catch (error) {
       console.error("Erro ao excluir sala:", error);
       alert("Erro ao excluir sala");
@@ -72,7 +72,6 @@ export default function ModalTableSala({
             </div>
             <div className="modal-body">
               {textoModal}
-
               <div className="table-responsive mt-3">
                 <table className="table table-bordered table-striped text-center align-middle">
                   <thead>
@@ -81,7 +80,7 @@ export default function ModalTableSala({
                       <th>Nome da Sala</th>
                       <th>Capacidade</th>
                       <th>Tipo</th>
-                      <th>Status</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -96,7 +95,10 @@ export default function ModalTableSala({
                             <div className="d-flex justify-content-center gap-1">
                               <button
                                 className="btn btn-sm btn-warning"
-                                onClick={() => onEdit(sala)}
+                                onClick={() => {
+                                  onEdit(sala);
+                                  document.querySelector(".btn-close").click();
+                                }}
                               >
                                 Editar
                               </button>

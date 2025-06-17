@@ -1,38 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function SalaForm() {
+export default function SalaForm({ salaEditando, setSalaEditando }) {
   const [nome, setNome] = useState("");
   const [capacidade, setCapacidade] = useState("");
   const [tipo, setTipo] = useState("");
 
+  useEffect(() => {
+    if (salaEditando) {
+      setNome(salaEditando.nome);
+      setCapacidade(salaEditando.capacidade);
+      setTipo(salaEditando.tipo);
+    }
+  }, [salaEditando]);
+
+  const limparCampos = () => {
+    setNome("");
+    setCapacidade("");
+    setTipo("");
+    setSalaEditando(null);
+  };
+
   const handleSave = async () => {
     const dados = {
-      nome: nome, // ✅ backend espera isso
+      nome,
       capacidade: parseInt(capacidade),
-      tipo: tipo,
+      tipo
     };
 
-    console.log("Enviando:", dados);
-
     try {
-      const response = await fetch("http://localhost:3000/salas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados),
-      });
+      const response = await fetch(
+        salaEditando
+          ? `http://localhost:3000/salas/${salaEditando.id}`
+          : "http://localhost:3000/salas",
+        {
+          method: salaEditando ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dados)
+        }
+      );
 
-      if (!response.ok) {
-        const erro = await response.json();
-        throw new Error(JSON.stringify(erro));
-      }
+      if (!response.ok) throw new Error("Erro ao salvar sala");
 
-      alert("Sala cadastrada com sucesso!");
-      setNome("");
-      setCapacidade("");
-      setTipo("");
+      alert(`Sala ${salaEditando ? "atualizada" : "cadastrada"} com sucesso!`);
+      limparCampos();
     } catch (error) {
-      console.error("Erro ao salvar sala:", error);
-      alert("Erro ao salvar sala: " + error.message);
+      console.error("Erro:", error);
+      alert("Erro ao salvar sala");
     }
   };
 
@@ -58,8 +71,10 @@ export default function SalaForm() {
         />
       </div>
 
+     
+
       <button className="btn btn-primary" onClick={handleSave}>
-        Salvar
+        {salaEditando ? "Atualizar" : "Salvar"}
       </button>
     </div>
   );

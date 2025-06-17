@@ -3,7 +3,7 @@ import InputForm from "../../../components/inputs/input";
 import InputSelect from "../../../components/inputs/inputSelect";
 import ModalFilme from "../../filme/components/modalFilme";
 
-export default function FormIngresso() {
+export default function FormIngresso({ ingressoEditando, setIngressoEditando }) {
   const [sessoes, setSessoes] = useState([]);
 
   useEffect(() => {
@@ -11,21 +11,36 @@ export default function FormIngresso() {
       try {
         const response = await fetch("http://localhost:3000/sessoes");
         const data = await response.json();
-
-        // ✅ Usa o nome do filme e da sala (vindo via include do backend)
         const opcoes = data.map((sessao) => ({
           value: sessao.id,
           label: `${sessao.filme.titulo} - ${sessao.sala.nome} - ${new Date(sessao.horario).toLocaleString("pt-BR")}`,
         }));
-
         setSessoes(opcoes);
       } catch (error) {
         console.error("Erro ao buscar sessões:", error);
       }
     };
-
     fetchSessoes();
   }, []);
+
+  useEffect(() => {
+    if (ingressoEditando) {
+      document.getElementById("inputSessao").value = ingressoEditando.sessao?.id || "";
+      document.getElementById("inputCliente").value = ingressoEditando.nomeCliente || "";
+      document.getElementById("inputCPF").value = ingressoEditando.cpf || "";
+      document.getElementById("inputAssesnto").value = ingressoEditando.poltrona || "";
+      document.getElementById("inputPagamento").value = ingressoEditando.pagamento || "";
+    }
+  }, [ingressoEditando]);
+
+  const limparCampos = () => {
+    document.getElementById("inputSessao").value = "";
+    document.getElementById("inputCliente").value = "";
+    document.getElementById("inputCPF").value = "";
+    document.getElementById("inputAssesnto").value = "";
+    document.getElementById("inputPagamento").value = "";
+    setIngressoEditando(null);
+  };
 
   const handleSave = async () => {
     const sessaoId = document.getElementById("inputSessao").value;
@@ -42,23 +57,22 @@ export default function FormIngresso() {
       pagamento,
     };
 
+    const url = ingressoEditando
+      ? `http://localhost:3000/ingressos/${ingressoEditando.id}`
+      : "http://localhost:3000/ingressos";
+    const method = ingressoEditando ? "PATCH" : "POST";
+
     try {
-      const response = await fetch("http://localhost:3000/ingressos", {
-        method: "POST",
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ingresso),
       });
 
       if (!response.ok) throw new Error("Erro ao salvar ingresso");
 
-      alert("Ingresso cadastrado com sucesso!");
-
-      // Limpa campos
-      document.getElementById("inputSessao").value = "";
-      document.getElementById("inputCliente").value = "";
-      document.getElementById("inputCPF").value = "";
-      document.getElementById("inputAssesnto").value = "";
-      document.getElementById("inputPagamento").value = "";
+      alert(`Ingresso ${ingressoEditando ? "atualizado" : "cadastrado"} com sucesso!`);
+      limparCampos();
     } catch (err) {
       alert("Erro ao salvar ingresso: " + err.message);
     }
@@ -101,9 +115,9 @@ export default function FormIngresso() {
           <ModalFilme
             id="exampleModal"
             idModal="exampleModalLabel"
-            labelBotton="Comprar Ingresso"
-            labelModal="Ingresso Comprado"
-            textoModal="Ingresso comprado com sucesso! 🎉"
+            labelBotton={ingressoEditando ? "Atualizar Ingresso" : "Comprar Ingresso"}
+            labelModal={`Ingresso ${ingressoEditando ? "Atualizado" : "Comprado"}`}
+            textoModal={`Ingresso ${ingressoEditando ? "atualizado" : "comprado"} com sucesso! 🎉`}
             onSave={handleSave}
           />
         </div>

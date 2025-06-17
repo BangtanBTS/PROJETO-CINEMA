@@ -2,40 +2,44 @@ import Card from "../../../components/cards/card";
 import Menu from "../../../components/menus/menu";
 import FormIngresso from "../components/formIngresso";
 import ModalTableIngresso from "../components/modalTableIngrsso";
+import { useState } from "react";
 
-export default function Ingressos(){
-    return(
-        <>
-        {/* <Menu /> */}
+export default function Ingressos() {
+  const [ingressoEditando, setIngressoEditando] = useState(null); // ✅ mover aqui
 
-        <hr></hr>
+  return (
+    <>
+      {/* <Menu /> */}
 
-        <figure className="text-center">
+      <hr />
+
+      <figure className="text-center">
         <blockquote className="blockquote">
-            <p>
+          <p>
             <h1>Compra de Ingresso</h1>
-            </p>
+          </p>
         </blockquote>
         <figcaption className="blockquote-footer">
-            Compre seu ingresso para a sessão desejada!
+          Compre seu ingresso para a sessão desejada!
         </figcaption>
-        </figure>
+      </figure>
 
-        <FormIngresso/>
- 
-        <figure class="text-center">
-                              
-            <h1 style={{padding: "12px"}}>Ingressos CineBTS</h1>
-                                
-            <div className="text-center">
-            <ModalTableIngresso
-                labelBotton="Ver Lista de Ingressos"
-                labelModal="Ingressos Comprados"
-                textoModal="Aqui está a tabela dos ingressos cadastrados no sistema."
-            />
-            </div>
-                                
-        </figure>
-        </>
-    );
+      <FormIngresso
+        ingressoEditando={ingressoEditando}
+        setIngressoEditando={setIngressoEditando}
+      />
+
+      <figure className="text-center">
+        <h1 style={{ padding: "12px" }}>Ingressos CineBTS</h1>
+        <div className="text-center">
+          <ModalTableIngresso
+            labelBotton="Ver Lista de Ingressos"
+            labelModal="Ingressos Comprados"
+            textoModal="Aqui está a tabela dos ingressos cadastrados no sistema."
+            onEdit={setIngressoEditando} // ✅ necessário para editar
+          />
+        </div>
+      </figure>
+    </>
+  );
 }
