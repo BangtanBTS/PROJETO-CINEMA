@@ -1,173 +1,167 @@
-import { useEffect, useState } from "react";
-import InputForm from "../../../components/inputs/input";
-import InputSelect from "../../../components/inputs/inputSelect";
-import ModalFilme from "../../filme/components/modalFilme";
+import { useState, useEffect } from "react";
 
-export default function FormSessao({ sessaoEditando, setSessaoEditando }) {
-  const [filmes, setFilmes] = useState([]);
-  const [salas, setSalas] = useState([]);
+export default function FormFilm({ filmeEditando, setFilmeEditando }) {
   const [formData, setFormData] = useState({
-    filme: "",
-    sala: "",
-    horario: "",
-    valorIngresso: "",
-    idioma: "",
-    formato: ""
+    titulo: "",
+    genero: "",
+    descricao: "",
+    classificacaoIndicativa: "",
+    duracao: "",
+    dataEstreia: ""
   });
 
-  // Buscar filmes e salas
   useEffect(() => {
-    fetch("http://localhost:3000/filmes")
-      .then((res) => res.json())
-      .then(setFilmes)
-      .catch((err) => console.error("Erro ao buscar filmes", err));
-
-    fetch("http://localhost:3000/salas")
-      .then((res) => res.json())
-      .then(setSalas)
-      .catch((err) => console.error("Erro ao buscar salas", err));
-  }, []);
-
-  // Quando for editar
-  useEffect(() => {
-    if (sessaoEditando) {
+    console.log("Recebi filmeEditando:", filmeEditando);
+    if (filmeEditando) {
       setFormData({
-        filme: sessaoEditando.filme?.titulo || "",
-        sala: sessaoEditando.sala?.nome || "",
-        horario: sessaoEditando.horario?.slice(0, 16) || "",
-        valorIngresso: sessaoEditando.valorIngresso?.toString() || "",
-        idioma: sessaoEditando.idioma || "",
-        formato: sessaoEditando.formato || ""
+        titulo: filmeEditando.titulo || "",
+        genero: filmeEditando.genero || "",
+        descricao: filmeEditando.descricao || "",
+        classificacaoIndicativa: filmeEditando.classificacaoIndicativa || "",
+        duracao: filmeEditando.duracao?.toString() || "",
+        dataEstreia: filmeEditando.dataEstreia?.slice(0, 10) || ""
       });
-
-      // Fecha o modal da tabela ao clicar em "Editar"
-      const modal = bootstrap.Modal.getInstance(document.getElementById("modalTableSessao"));
-      if (modal) modal.hide();
     }
-  }, [sessaoEditando]);
+  }, [filmeEditando]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    const key = id.replace("input", "").charAt(0).toLowerCase() + id.replace("input", "").slice(1);
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const limparCampos = () => {
     setFormData({
-      filme: "",
-      sala: "",
-      horario: "",
-      valorIngresso: "",
-      idioma: "",
-      formato: ""
+      titulo: "",
+      genero: "",
+      descricao: "",
+      classificacaoIndicativa: "",
+      duracao: "",
+      dataEstreia: ""
     });
-    setSessaoEditando(null);
+    setFilmeEditando(null);
   };
 
   const handleSave = async () => {
-    const sessao = {
-      filme: formData.filme,
-      sala: formData.sala,
-      horario: formData.horario + ":00",
-      valorIngresso: parseFloat(formData.valorIngresso),
-      idioma: formData.idioma,
-      formato: formData.formato
+    const dados = {
+      ...formData,
+      duracao: parseInt(formData.duracao),
+      dataEstreia: new Date(formData.dataEstreia).toISOString(),
+      foto: "/cartazes/default.jpg"
     };
 
-    const url = sessaoEditando
-      ? `http://localhost:3000/sessoes/${sessaoEditando.id}`
-      : "http://localhost:3000/sessoes";
+    const url = filmeEditando
+      ? `http://localhost:3000/filmes/${filmeEditando.id}`
+      : "http://localhost:3000/filmes";
 
-    const method = sessaoEditando ? "PATCH" : "POST";
+    const method = filmeEditando ? "PATCH" : "POST";
 
     try {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sessao)
+        body: JSON.stringify(dados)
       });
 
-      if (!response.ok) throw new Error("Erro ao salvar sessão");
+      if (!response.ok) {
+        const erro = await response.text();
+        throw new Error(`Erro ao salvar filme: ${erro}`);
+      }
 
-      alert(`Sessão ${sessaoEditando ? "atualizada" : "cadastrada"} com sucesso!`);
+      alert(`Filme ${filmeEditando ? "atualizado" : "cadastrado"} com sucesso!`);
       limparCampos();
-    } catch (error) {
-      alert(error.message);
+    } catch (err) {
+      alert(err.message);
     }
   };
 
   return (
-    <div className="cadastro_sessao" style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "5%" }}>
+    <div className="cadastro_film" style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "5%" }}>
       <form className="row g-3" style={{ width: "46rem" }} onSubmit={(e) => e.preventDefault()}>
         <div className="col-md-6">
-          <InputSelect
-            id="inputFilme"
-            label="Filme"
-            value={formData.filme}
-            onChange={handleChange}
-            options={filmes.map((f) => ({ value: f.titulo, label: f.titulo }))}
-          />
-        </div>
-        <div className="col-md-6">
-          <InputSelect
-            id="inputSala"
-            label="Sala"
-            value={formData.sala}
-            onChange={handleChange}
-            options={salas.map((sala) => ({ value: sala.nome, label: sala.nome }))}
-          />
-        </div>
-        <div className="col-md-6">
-          <InputForm
-            id="inputHorario"
-            label="Data & Hora"
-            type="datetime-local"
-            value={formData.horario}
+          <label className="form-label">Título</label>
+          <input
+            id="titulo"
+            className="form-control"
+            type="text"
+            value={formData.titulo}
             onChange={handleChange}
           />
         </div>
+
         <div className="col-md-6">
-          <InputForm
-            id="inputValorIngresso"
-            label="Preço"
+          <label className="form-label">Gênero</label>
+          <select
+            id="genero"
+            className="form-select"
+            value={formData.genero}
+            onChange={handleChange}
+          >
+            <option value="">Selecione...</option>
+            <option value="Comédia">Comédia</option>
+            <option value="Românce">Românce</option>
+            <option value="Ficção">Ficção</option>
+            <option value="Ação">Ação</option>
+            <option value="Animação">Animação</option>
+            <option value="Drama">Drama</option>
+          </select>
+        </div>
+
+        <div className="col-12">
+          <label className="form-label">Descrição</label>
+          <input
+            id="descricao"
+            className="form-control"
+            type="text"
+            value={formData.descricao}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="col-12">
+          <label className="form-label">Classificação Indicativa</label>
+          <select
+            id="classificacaoIndicativa"
+            className="form-select"
+            value={formData.classificacaoIndicativa}
+            onChange={handleChange}
+          >
+            <option value="">Selecione...</option>
+            <option value="L">L</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="14">14</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+          </select>
+        </div>
+
+        <div className="col-md-6">
+          <label className="form-label">Duração (min)</label>
+          <input
+            id="duracao"
+            className="form-control"
             type="number"
-            value={formData.valorIngresso}
+            value={formData.duracao}
             onChange={handleChange}
           />
         </div>
+
         <div className="col-md-6">
-          <InputSelect
-            id="inputIdioma"
-            label="Idioma"
-            value={formData.idioma}
+          <label className="form-label">Data de Estreia</label>
+          <input
+            id="dataEstreia"
+            className="form-control"
+            type="date"
+            value={formData.dataEstreia}
             onChange={handleChange}
-            options={[
-              { value: "Dublado", label: "Dublado" },
-              { value: "Legendado", label: "Legendado" }
-            ]}
           />
         </div>
-        <div className="col-md-6">
-          <InputSelect
-            id="inputFormato"
-            label="Formato"
-            value={formData.formato}
-            onChange={handleChange}
-            options={[
-              { value: "2D", label: "2D" },
-              { value: "3D", label: "3D" },
-              { value: "IMAX", label: "IMAX" }
-            ]}
-          />
+
+        <div className="col-12 text-center">
+          <button className="btn btn-primary" onClick={handleSave}>
+            {filmeEditando ? "Atualizar" : "Salvar"}
+          </button>
         </div>
-        <ModalFilme
-          idBotao="btn-salvar-sessao"
-          idModal="exampleModal"
-          labelModal={`Sessão ${sessaoEditando ? "Atualizada" : "Cadastrada"}`}
-          labelbotao={sessaoEditando ? "Atualizar" : "Salvar"}
-          textoModal={`A sessão foi ${sessaoEditando ? "atualizada" : "cadastrada"} com sucesso! 🎉`}
-          onSave={handleSave}
-        />
       </form>
     </div>
   );
