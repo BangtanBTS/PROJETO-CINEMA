@@ -10,7 +10,7 @@ export default function FormSessao({ sessaoEditando, setSessaoEditando }) {
   useEffect(() => {
     const fetchFilmes = async () => {
       try {
-        const response = await fetch("http://localhost:3000/filmes");
+        const response = await fetch("/api/filmes");
         const filmesData = await response.json();
         setFilmes(filmesData);
       } catch (error) {
@@ -20,7 +20,7 @@ export default function FormSessao({ sessaoEditando, setSessaoEditando }) {
 
     const fetchSalas = async () => {
       try {
-        const response = await fetch("http://localhost:3000/salas");
+        const response = await fetch("/api/salas");
         const salasData = await response.json();
         setSalas(salasData);
       } catch (error) {
@@ -72,8 +72,8 @@ export default function FormSessao({ sessaoEditando, setSessaoEditando }) {
     };
 
     const url = sessaoEditando
-      ? `http://localhost:3000/sessoes/${sessaoEditando.id}`
-      : "http://localhost:3000/sessoes";
+      ? `/api/sessoes/${sessaoEditando.id}`
+      : "/api/sessoes";
     const method = sessaoEditando ? "PATCH" : "POST";
 
     try {

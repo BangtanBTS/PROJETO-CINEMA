@@ -12,7 +12,7 @@ export default function ModalTableFilm({
 
   const buscarFilmes = async () => {
     try {
-      const response = await fetch("http://localhost:3000/filmes");
+      const response = await fetch("/api/filmes");
       if (!response.ok) throw new Error("Erro ao buscar filmes");
       const dados = await response.json();
       setFilmes(dados);
@@ -25,7 +25,7 @@ export default function ModalTableFilm({
   const excluirFilme = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este filme?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/filmes/${id}`, {
+      const response = await fetch(`/api/filmes/${id}`, {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Erro ao excluir filme");

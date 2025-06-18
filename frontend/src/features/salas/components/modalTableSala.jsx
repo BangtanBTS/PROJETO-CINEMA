@@ -12,7 +12,7 @@ export default function ModalTableSala({
 
   const buscarSalas = async () => {
     try {
-      const response = await fetch("http://localhost:3000/salas");
+      const response = await fetch("/api/salas");
       if (!response.ok) throw new Error("Erro ao buscar salas");
       const dados = await response.json();
       setSalas(dados);
@@ -25,7 +25,7 @@ export default function ModalTableSala({
   const excluirSala = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir esta sala?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/salas/${id}`, {
+      const response = await fetch(`/api/salas/${id}`, {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Erro ao excluir sala");

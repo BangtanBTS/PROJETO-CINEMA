@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardResume from "../../../components/cards/cardResume";
 import FormFilm from "../components/formFilm"; // nome correto e com letra maiúscula
-import ModalTableFilm from "../components/ModalTableFilm";
+import ModalTableFilm from "../components/modalTableFilm";
 
 export default function Filmes() {
   const [filmeEditando, setFilmeEditando] = useState(null);

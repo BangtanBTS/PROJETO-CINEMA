@@ -30,8 +30,8 @@ export default function SalaForm({ salaEditando, setSalaEditando }) {
     try {
       const response = await fetch(
         salaEditando
-          ? `http://localhost:3000/salas/${salaEditando.id}`
-          : "http://localhost:3000/salas",
+          ? `/api/salas/${salaEditando.id}`
+          : "/api/salas",
         {
           method: salaEditando ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },

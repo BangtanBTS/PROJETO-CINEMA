@@ -15,7 +15,7 @@ export default function ModalTableIngresso({
   const fetchIngressos = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/ingressos");
+      const response = await fetch("/api/ingressos");
       if (!response.ok) throw new Error("Erro ao buscar ingressos");
       const data = await response.json();
       setIngressos(data);
@@ -29,7 +29,7 @@ export default function ModalTableIngresso({
   const handleDelete = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este ingresso?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/ingressos/${id}`, {
+      const response = await fetch(`/api/ingressos/${id}`, {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Erro ao excluir ingresso");

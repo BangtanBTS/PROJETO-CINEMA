@@ -15,7 +15,7 @@ export default function modalTableSessao({
   const fetchSessoes = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/sessoes");
+      const res = await fetch("/api/sessoes");
       const data = await res.json();
       setSessoes(data);
     } catch (err) {
@@ -31,7 +31,7 @@ export default function modalTableSessao({
 
   const excluirSessao = async (id) => {
     if (!window.confirm("Deseja realmente excluir esta sessão?")) return;
-    await fetch(`http://localhost:3000/sessoes/${id}`, { method: "DELETE" });
+    await fetch(`/api/sessoes/${id}`, { method: "DELETE" });
     fetchSessoes();
   };
 

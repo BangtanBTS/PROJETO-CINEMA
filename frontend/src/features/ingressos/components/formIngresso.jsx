@@ -9,7 +9,7 @@ export default function FormIngresso({ ingressoEditando, setIngressoEditando }) 
   useEffect(() => {
     const fetchSessoes = async () => {
       try {
-        const response = await fetch("http://localhost:3000/sessoes");
+        const response = await fetch("/api/sessoes");
         const data = await response.json();
         const opcoes = data.map((sessao) => ({
           value: sessao.id,
@@ -58,8 +58,8 @@ export default function FormIngresso({ ingressoEditando, setIngressoEditando }) 
     };
 
     const url = ingressoEditando
-      ? `http://localhost:3000/ingressos/${ingressoEditando.id}`
-      : "http://localhost:3000/ingressos";
+      ? `/api/ingressos/${ingressoEditando.id}`
+      : "/api/ingressos";
     const method = ingressoEditando ? "PATCH" : "POST";
 
     try {

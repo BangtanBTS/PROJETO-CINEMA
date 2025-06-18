@@ -50,8 +50,8 @@ export default function FormFilm({ filmeEditando, setFilmeEditando }) {
     };
 
     const url = filmeEditando
-      ? `http://localhost:3000/filmes/${filmeEditando.id}`
-      : "http://localhost:3000/filmes";
+      ? `/api/filmes/${filmeEditando.id}`
+      : "/api/filmes";
 
     const method = filmeEditando ? "PATCH" : "POST";
 
