@@ -79,7 +79,6 @@ export default function ModalTableSala({
                       <th>ID</th>
                       <th>Nome da Sala</th>
                       <th>Capacidade</th>
-                      <th>Tipo</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
@@ -90,7 +89,6 @@ export default function ModalTableSala({
                           <td>{sala.id}</td>
                           <td>{sala.nome}</td>
                           <td>{sala.capacidade}</td>
-                          <td>{sala.tipo}</td>
                           <td>
                             <div className="d-flex justify-content-center gap-1">
                               <button
